@@ -30,7 +30,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.20</version>
-            <optional>true</optional>
         </dependency>
     </dependencies>
 
@@ -41,56 +40,19 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.0.2.RELEASE</version>
             </plugin>
-
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.20.1</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
                 <configuration>
-                    <argLine>--add-modules java.xml.bind</argLine>
-                    <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
-                    <argLine>--illegal-access=deny</argLine>
+                    <source>1.9</source>
+                    <target>1.9</target>
+                    <!--<verbose>true</verbose>-->
+                    <!--<showDeprecation>true</showDeprecation>-->
+                    <!--<showWarnings>true</showWarnings>-->
+                    <fork>true</fork>
+                    <executable>C:\Program Files\Java\jdk-9.0.1\bin\javac</executable>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.bsc.maven</groupId>
-                <artifactId>maven-processor-plugin</artifactId>
-                <version>2.2.4</version>
-                <executions>
-                    <execution>
-                        <id>process</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <defaultOutputDirectory>${project.build.directory}/generated-sources/mapstruct</defaultOutputDirectory>
-                    <processors>
-                        <processor>org.mapstruct.ap.MappingProcessor</processor>
-                    </processors>
-                    <sourceDirectory>${project.build.directory}/delombok</sourceDirectory>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok-maven-plugin</artifactId>
-                <version>1.16.20.0</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>delombok</goal>
-                        </goals>
-                        <configuration>
-                            <skip>true</skip>
-                            <addOutputDirectory>false</addOutputDirectory>
-                            <sourceDirectory>src/main/java</sourceDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
