@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 @ToString
 @NoArgsConstructor
-@Entity
+//@Entity
 public class User {
     private Long id;
     private String firstName;
