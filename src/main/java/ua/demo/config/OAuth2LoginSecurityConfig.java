@@ -1,16 +1,19 @@
 package ua.demo.config;
 
-@Configuration
-public class SecurityConfig  extends WebSecurityConfigurerAdapter {
-
+//@EnableWebSecurity
+public class OAuth2LoginSecurityConfig {
+/*public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
-                .anyRequest().permitAll()
-                .and()
-
-                .oauth2Login();
-    }
-
+                .oauth2Login()
+                .authorizationEndpoint()
+					...
+				.redirectionEndpoint()
+					...
+				.tokenEndpoint()
+					...
+				.userInfoEndpoint()
+					...
+    }*/
 }
