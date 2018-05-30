@@ -3,66 +3,55 @@ package ua.demo.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig  extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
                 .withUser("test").password("test").roles("USER")
-                    .and()
+                .and()
                 .withUser("admin").password("admin").roles("USER");
     }
 
     @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring()
+                .antMatchers("/**/*.js", "/index.html", "/js/**", "/assets/**", "/css/**", "/img/**", "/fonts/**", "/robots.txt");
+    }
+
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .oauth2Login()
-                    .and()
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+                .and()
+                .csrf().disable()
+                .anonymous().disable()
+                .httpBasic().disable()
                 .authorizeRequests()
-                    .antMatchers( "/users").permitAll()
-                    .anyRequest().authenticated();
-    }
-
-    @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
-        return new InMemoryClientRegistrationRepository(this.googleClientRegistration());
-    }
-
-    @Bean
-    public OAuth2AuthorizedClientService authorizedClientService() {
-        return new InMemoryOAuth2AuthorizedClientService(this.clientRegistrationRepository());
-    }
-
-    private ClientRegistration googleClientRegistration() {
-        return ClientRegistration.withRegistrationId("google")
-                .clientId("google-client-id")
-                .clientSecret("google-client-secret")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.BASIC)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUriTemplate("{baseUrl}/login/oauth2/code/{registrationId}")
-                .scope("openid", "profile", "email", "address", "phone")
-                .authorizationUri("https://accounts.google.com/o/oauth2/v2/auth")
-                .tokenUri("https://www.googleapis.com/oauth2/v4/token")
-                .userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo")
-                .userNameAttributeName(IdTokenClaimNames.SUB)
-                .jwkSetUri("https://www.googleapis.com/oauth2/v3/certs")
-                .clientName("Google")
-                .build();
+                .antMatchers("/ping").permitAll()
+                .antMatchers("/oauth/token").permitAll()
+                .antMatchers("/oauth/authorize").permitAll()
+                .antMatchers("/login").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin().permitAll();
     }
 
     @Bean

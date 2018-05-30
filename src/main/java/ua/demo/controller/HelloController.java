@@ -11,4 +11,9 @@ public class HelloController {
         return "Greetings from Spring Boot!";
     }
 
+    @RequestMapping("/ping")
+    public String ping() {
+        return "ping ping ping";
+    }
+
 }
