@@ -7,7 +7,8 @@ import ua.demo.dto.UserDto;
 @RestController
 public class UserController {
     @GetMapping(value = "users")
-    public void getUsers() {
+    public String getUsers() {
         UserDto userDto = new UserDto();
+        return "test";
     }
 }
